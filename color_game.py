@@ -29,11 +29,12 @@ game_over = False
 score = 0
 high_score = 0
 color_diff = 30
+level = 1
 
 # Variables from items. started so can loop over later
 labels = [start_button,start_label,reset_button,reset_label,score_back,score_label,high_score_back,high_score_label]
 end_game_info = [end_game_back,end_game_label,different_color_label,diff_value_label,rest_color_label,rest_value_label]
-game_info = [intro_game_back]
+game_info = [intro_game_back,level_label]
 
 # Grid creation
 grid = [[None for _ in range(grid_size)] for _ in range(grid_size)]
@@ -94,36 +95,59 @@ def on_draw():
             grid[i][j].draw()
 
     # Draw buttons/labels from items.py
-    score_label.text = f'score: {score}'
-    high_score_label.text = f'highscore: {high_score}'
-
-
     for item in labels:
         item.draw()
     
     if game_over:
         for item in end_game_info:
             item.draw()
+    elif game_started:
+        level_label.text = f'Level: {level}'
+        for item in game_info:
+            item.draw()
+
+# This function is need for when moving to next level (or reset)
+def level_up(new_level, new_color_diff, new_grid_size):
+    global grid_size, grid, cell_size, level, color_diff
+    grid_size = new_grid_size
+    level = new_level
+    color_diff = new_color_diff
+    grid = [[None for _ in range(grid_size)] for _ in range(grid_size)]
+    cell_size = 350 // grid_size # size of grid should be 350x350
 
 @window.event
 def on_mouse_press(x, y, button, modifiers):
-    global game_started, score, game_over, high_score, level, grid_size, color_diff
+    global game_started, score, game_over, high_score, level, grid_size, color_diff, grid
 
     if (x,y) in start_button:
         game_started = True
         score = 0
         game_over = False
+        level_up(1, 30, 2) # reset level, color_diff, grid_size
         color_grid()
     if (x,y) in reset_button:
         game_started = False
         score = 0
         game_over = False
+        level_up(1, 30, 2) # reset level, color_diff, grid_size
     elif (x,y) in grid_space and game_started and not game_over:
         for i in range(grid_size):
             for j in range(grid_size):
                 if (x,y) in grid[i][j] and different_cell == (i, j):
                     score += 1
                     high_score = max(score, high_score)
+                    score_label.text = f'score: {score}'
+                    high_score_label.text = f'highscore: {high_score}'
+
+                    if score == 5:
+                        level_up(2, 25, 3)
+                    elif score == 10:
+                        level_up(3, 25, 4)
+                    elif score == 20:
+                        level_up(4, 20, 4)
+                    elif score == 30:
+                        level_up(5, 20, 5)
+
                     color_grid()
                     break
                 elif (x,y) in grid[i][j] and different_cell != (i, j):
