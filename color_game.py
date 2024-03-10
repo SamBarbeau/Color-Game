@@ -22,7 +22,7 @@ game_started = False
 game_over = False
 score = 0
 high_score = 0
-color_diff = 25
+color_diff = 20
 level = 1
 time_limit = 5
 
@@ -182,13 +182,13 @@ def on_mouse_press(x, y, button, modifiers):
                     high_score_label.text = f'highscore: {high_score}'
 
                     if score == 5:
-                        level_up(2, 20, 3)
+                        level_up(2, 15, 3)
                     elif score == 10:
-                        level_up(3, 20, 4)
+                        level_up(3, 15, 4)
                     elif score == 20:
-                        level_up(4, 15, 4)
+                        level_up(4, 10, 4)
                     elif score == 30:
-                        level_up(5, 15, 5)
+                        level_up(5, 10, 5)
 
                     color_grid()
 
