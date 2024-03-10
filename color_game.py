@@ -3,12 +3,6 @@ from pyglet.shapes import Rectangle, BorderedRectangle
 import random
 from items import *
 
-### todo: add a level system to increase difficulty
-###         - increase grid size
-###         - decrease color difference
-###
-###       add timer to game
-
 # Window size
 window_width = 960
 window_height = 540
@@ -30,11 +24,12 @@ score = 0
 high_score = 0
 color_diff = 25
 level = 1
+time_limit = 5
 
 # Variables from items. started so can loop over later
 labels = [start_button,start_label,reset_button,reset_label,score_back,score_label,high_score_back,high_score_label]
 end_game_info = [end_game_back,end_game_label,different_color_label,diff_value_label,rest_color_label,rest_value_label]
-game_info = [intro_game_back,level_label]
+game_info = [intro_game_back,level_label,timer_label]
 
 # Grid creation
 grid = [[None for _ in range(grid_size)] for _ in range(grid_size)]
@@ -111,30 +106,70 @@ def on_draw():
 # This function is need for when moving to next level (or reset)
 def level_up(new_level, new_color_diff, new_grid_size):
     global grid_size, grid, cell_size, level, color_diff
+
     grid_size = new_grid_size
     level = new_level
     color_diff = new_color_diff
     grid = [[None for _ in range(grid_size)] for _ in range(grid_size)]
     cell_size = 350 // grid_size # size of grid should be 350x350
 
+def start_game():
+    global game_started, time_limit, score, game_over
+    game_started = True
+    game_over = False
+
+    level_up(1, 30, 2) # reset level, color_diff, grid_size
+
+    score = 0
+    score_label.text = f'score: {score}'
+
+    time_limit = 5  # Reset the time limit
+    pyglet.clock.schedule_interval(update_timer, 0.1)  # Start the timer
+
+def end_game():
+    global game_over
+
+    game_over = True
+
+    # show the different color
+    grid[different_cell[0]][different_cell[1]].border_color = (255, 255, 255)
+
+    # update RGB values for end game info
+    diff_value_label.text = f'{grid[different_cell[0]][different_cell[1]].color[:-1]}'
+
+    if different_cell == (0, 0):
+        rest_value_label.text = f'{grid[0][1].color[:-1]}'
+    else:
+        rest_value_label.text = f'{grid[0][0].color[:-1]}'
+
+    pyglet.clock.unschedule(update_timer)  # Stop the timer
+
+# Timer function
+def update_timer(dt):
+    global time_limit
+    if game_started and not game_over:
+        time_limit -= 0.1
+        timer_label.text = f'Time: {round(time_limit,1)} sec'
+        if time_limit <= 0:
+            end_game()
+
 @window.event
 def on_mouse_press(x, y, button, modifiers):
-    global game_started, score, game_over, high_score, level, grid_size, color_diff, grid
+    global game_started, score, game_over, high_score, level, grid_size, color_diff, grid, time_limit
 
     if (x,y) in start_button:
-        game_started = True
-        score = 0
-        score_label.text = f'score: {score}'
-        game_over = False
-        level_up(1, 30, 2) # reset level, color_diff, grid_size
+        start_game()
         color_grid()
-    if (x,y) in reset_button:
+
+    elif (x,y) in reset_button:
         game_started = False
+        game_over = False
         score = 0
         score_label.text = f'score: {score}'
-        game_over = False
         level_up(1, 30, 2) # reset level, color_diff, grid_size
+
     elif (x,y) in grid_space and game_started and not game_over:
+        # need this so no "double clicks" happen
         found_cell = False
         for i in range(grid_size):
             for j in range(grid_size):
@@ -156,16 +191,17 @@ def on_mouse_press(x, y, button, modifiers):
                         level_up(5, 15, 5)
 
                     color_grid()
+
+                    time_limit = 5  # Reset the time limit
                     break
                 elif (x,y) in grid[i][j] and different_cell != (i, j):
                     found_cell = True
 
-                    game_over = True
-                    grid[i][j].border_color = (255, 0, 0) # tmp
-                    grid[different_cell[0]][different_cell[1]].border_color = (255, 255, 255)
-                    diff_value_label.text = f'{grid[different_cell[0]][different_cell[1]].color[:-1]}'
-                    rest_value_label.text = f'{grid[i][j].color[:-1]}'
+                    end_game()
+
+                    grid[i][j].border_color = (255, 0, 0) # highlight the wrongly clicked cell
                     break
+
             if found_cell:
                 break
 

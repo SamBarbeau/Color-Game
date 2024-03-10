@@ -48,6 +48,11 @@ level_label = pyglet.text.Label('Level: 1', font_name='Verdana', font_size=20,
                                     x=window_width // 2 + grid_len // 2 + 152.5, y=intro_game_back.y + intro_game_back.height * (3/4),
                                     anchor_x='center', anchor_y='center', color=(255, 255, 255, 255))
 
+# Timer label
+timer_label = pyglet.text.Label('Time: 5 sec', font_name='Verdana', font_size=20,
+                                    x=window_width // 2 + grid_len // 2 + 152.5, y=intro_game_back.y + intro_game_back.height * (1/4),
+                                    anchor_x='center', anchor_y='center', color=(255, 255, 255, 255))
+
 # endgame info
 end_game_back = BorderedRectangle(722.5, 120, 170, 300, color=(0, 120, 215), border=5, border_color=(0, 0, 0))
 end_game_label = pyglet.text.Label('Game Over:', font_name='Verdana', font_size=15, bold=True,
