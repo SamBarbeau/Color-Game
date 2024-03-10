@@ -28,7 +28,7 @@ game_started = False
 game_over = False
 score = 0
 high_score = 0
-color_diff = 30
+color_diff = 25
 level = 1
 
 # Variables from items. started so can loop over later
@@ -62,9 +62,11 @@ def color_grid():
 
     # Select a random cell and a random color component to be off by a bit
     different_cell = (random.randint(0, grid_size-1), random.randint(0, grid_size-1))
-    color_component = random.randint(0, 2)
-
     different_color = list(grid[different_cell[0]][different_cell[1]].color)
+
+    # always change the largest componenet (sometimes changing the smallest component, even by a lot, is hard to see)
+    color_component = different_color.index(max(different_color[:-1]))
+
     if 255 - (different_color[color_component] + color_diff) < 0:
         different_color[color_component] -= color_diff
     else:
@@ -122,40 +124,50 @@ def on_mouse_press(x, y, button, modifiers):
     if (x,y) in start_button:
         game_started = True
         score = 0
+        score_label.text = f'score: {score}'
         game_over = False
         level_up(1, 30, 2) # reset level, color_diff, grid_size
         color_grid()
     if (x,y) in reset_button:
         game_started = False
         score = 0
+        score_label.text = f'score: {score}'
         game_over = False
         level_up(1, 30, 2) # reset level, color_diff, grid_size
     elif (x,y) in grid_space and game_started and not game_over:
+        found_cell = False
         for i in range(grid_size):
             for j in range(grid_size):
                 if (x,y) in grid[i][j] and different_cell == (i, j):
+                    found_cell = True
+
                     score += 1
                     high_score = max(score, high_score)
                     score_label.text = f'score: {score}'
                     high_score_label.text = f'highscore: {high_score}'
 
                     if score == 5:
-                        level_up(2, 25, 3)
+                        level_up(2, 20, 3)
                     elif score == 10:
-                        level_up(3, 25, 4)
+                        level_up(3, 20, 4)
                     elif score == 20:
-                        level_up(4, 20, 4)
+                        level_up(4, 15, 4)
                     elif score == 30:
-                        level_up(5, 20, 5)
+                        level_up(5, 15, 5)
 
                     color_grid()
                     break
                 elif (x,y) in grid[i][j] and different_cell != (i, j):
+                    found_cell = True
+
                     game_over = True
+                    grid[i][j].border_color = (255, 0, 0) # tmp
                     grid[different_cell[0]][different_cell[1]].border_color = (255, 255, 255)
                     diff_value_label.text = f'{grid[different_cell[0]][different_cell[1]].color[:-1]}'
                     rest_value_label.text = f'{grid[i][j].color[:-1]}'
                     break
+            if found_cell:
+                break
 
 @window.event
 def on_mouse_motion(x, y, dx, dy):
