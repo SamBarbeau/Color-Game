@@ -1,6 +1,7 @@
 import pyglet
 from pyglet.shapes import Rectangle, BorderedRectangle
 import random
+import numpy as np
 from items import *
 
 # Window size
@@ -17,14 +18,22 @@ cell_size = 350 // grid_size
 # Variable to store the different colored cell
 different_cell = None
 
+# Load in high score cache
+try:
+    high_score_cache = np.load('high_score_cache.npy', allow_pickle=True).item()
+    high_score = high_score_cache['high_score']
+    high_score_label.text = f'highscore: {high_score}'
+except:
+    high_score_cache = {}
+    high_score = 0
+
 # Variables to store the game state
 game_started = False
 game_over = False
 score = 0
-high_score = 0
 color_diff = 20
 level = 1
-time_limit = 5
+time_limit = 4
 
 # Variables from items. started so can loop over later
 labels = [start_button,start_label,reset_button,reset_label,score_back,score_label,high_score_back,high_score_label]
@@ -118,12 +127,12 @@ def start_game():
     game_started = True
     game_over = False
 
-    level_up(1, 30, 2) # reset level, color_diff, grid_size
+    level_up(1, 20, 2) # reset level, color_diff, grid_size
 
     score = 0
     score_label.text = f'score: {score}'
 
-    time_limit = 5  # Reset the time limit
+    time_limit = 4  # Reset the time limit
     pyglet.clock.schedule_interval(update_timer, 0.1)  # Start the timer
 
 def end_game():
@@ -143,6 +152,10 @@ def end_game():
         rest_value_label.text = f'{grid[0][0].color[:-1]}'
 
     pyglet.clock.unschedule(update_timer)  # Stop the timer
+
+    # Update high score cache
+    high_score_cache['high_score'] = high_score
+    np.save('high_score_cache.npy', high_score_cache)
 
 # Timer function
 def update_timer(dt):
@@ -166,7 +179,7 @@ def on_mouse_press(x, y, button, modifiers):
         game_over = False
         score = 0
         score_label.text = f'score: {score}'
-        level_up(1, 30, 2) # reset level, color_diff, grid_size
+        level_up(1, 20, 2) # reset level, color_diff, grid_size
 
     elif (x,y) in grid_space and game_started and not game_over:
         # need this so no "double clicks" happen
@@ -192,7 +205,7 @@ def on_mouse_press(x, y, button, modifiers):
 
                     color_grid()
 
-                    time_limit = 5  # Reset the time limit
+                    time_limit = 4  # Reset the time limit
                     break
                 elif (x,y) in grid[i][j] and different_cell != (i, j):
                     found_cell = True
