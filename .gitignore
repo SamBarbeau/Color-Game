@@ -1,1 +1,3 @@
 __pycache__/
+.venv.nosync
+high_score_cache.npy

@@ -8,8 +8,20 @@ This project is a color game inspired by an Instagram story filter saw a year or
 - **Game Mechanics:** Implements game mechanics to increase difficulty levels, track score, display RGB values of the missed color, etc.
 
 ## Requirements
-- Python 3
-- Pyglet
+
+#### Python Setup
+
+1. Create and activate a virtual environment:
+```bash
+python3 -m venv .venv
+source .venv/bin/activate # One Windows: .venv\Scripts\activate
+```
+
+2. Install the required packages:
+```bash
+pip install pyglet
+pip install numpy
+```
 
 ## Game Mechanics
 The game mechanics developed for this color game (grid generation, color differentiation, mouse click handling, score tracking, level progression, and timer functionality) were inspired by the Instagram story filter game. The game starts with a grid of colors where one color is slightly different from the others. As the player's score increases, the game progresses to higher difficulty levels by increasing the grid size and decreasing the difference between the colors. If the player clicks on the wrong color or the time runs out, the game ends and the RGB values of the missed color are displayed.
@@ -17,9 +29,9 @@ The game mechanics developed for this color game (grid generation, color differe
 Currently, the project is complete and fully functional. However, future improvements may be added based on user feedback and further testing... or if I get bored one day.
 
 ## Use the Program
-To use the program, you need to have Python and Pyglet installed. You can install Pyglet with pip:
+To use the program, run the following command in your terminal:
 ```bash
-$ pip install pyglet
+python3 color_game.py
 ```
 
 Enjoy the game and try to beat your high score!

@@ -55,7 +55,7 @@ timer_label = pyglet.text.Label('Time: 5 sec', font_name='Verdana', font_size=20
 
 # endgame info
 end_game_back = BorderedRectangle(722.5, 120, 170, 300, color=(0, 120, 215), border=5, border_color=(0, 0, 0))
-end_game_label = pyglet.text.Label('Game Over:', font_name='Verdana', font_size=15, bold=True,
+end_game_label = pyglet.text.Label('Game Over:', font_name=('Verdana', 'bold'), font_size=15,
                                     x=end_game_back.x + end_game_back.width // 2, y=end_game_back.y + end_game_back.height - 20,
                                     anchor_x='center', anchor_y='top', color=(255, 255, 255, 255))
 
